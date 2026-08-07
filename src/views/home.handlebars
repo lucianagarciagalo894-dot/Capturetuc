@@ -1,0 +1,36 @@
+<section class="hero">
+  <h1>CAPTURE TUC</h1>
+  <p>
+    Convertimos tus recuerdos en álbumes de fotos impresos y personalizados. Elegí el álbum ideal para cada ocasión y armá tu pedido
+    en minutos.
+  </p>
+  <a href="/products" class="btn btn-primary">Ver catálogo</a>
+</section>
+
+<section>
+  <h2>Álbumes destacados</h2>
+  <div class="products-grid">
+    {{#each featuredProducts}}
+      <div class="product-card">
+        <div class="product-thumb">
+          {{#if this.thumbnails.[0]}}
+            <img src="{{this.thumbnails.[0]}}" alt="{{this.title}}" />
+          {{else}}
+            <div class="thumb-placeholder">Sin imagen</div>
+          {{/if}}
+        </div>
+        <h3>{{this.title}}</h3>
+        <p class="product-category">{{this.category}}</p>
+        <p class="product-price">{{formatPrice this.price}}</p>
+        <a href="/products/{{this._id}}" class="btn btn-secondary">Ver detalle</a>
+      </div>
+    {{else}}
+      <p>Todavía no hay álbumes cargados. Ingresá al panel admin para crear el primero.</p>
+    {{/each}}
+  </div>
+</section>
+
+<section class="contact-section">
+  <h2>Contacto</h2>
+  {{> contact-info}}
+</section>

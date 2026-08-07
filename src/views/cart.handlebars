@@ -1,0 +1,62 @@
+<h1 class="cart-page-title">
+  <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+    <circle cx="9" cy="21" r="1.4" fill="currentColor" stroke="none"></circle>
+    <circle cx="18" cy="21" r="1.4" fill="currentColor" stroke="none"></circle>
+    <path d="M2.5 3h2l2.4 12.2a2 2 0 0 0 2 1.6h8.6a2 2 0 0 0 2-1.6L21.5 7H6"></path>
+  </svg>
+  Mi carrito
+</h1>
+
+<div id="cart-container" data-cart-id="{{cartId}}">
+  {{#if items.length}}
+    <table class="cart-table">
+      <thead>
+        <tr>
+          <th>Álbum</th>
+          <th>Precio</th>
+          <th>Cantidad</th>
+          <th>Subtotal</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each items}}
+          <tr data-product-id="{{this.product._id}}">
+            <td>
+              {{this.product.title}}
+              {{#if this.extraPages}}
+                <br /><span class="hint">+ {{this.extraPages}} hojas extra ({{formatPrice this.extraPagesCost}})</span>
+              {{/if}}
+            </td>
+            <td>{{formatPrice this.unitPrice}}</td>
+            <td>
+              <input
+                type="number"
+                class="cart-quantity-input"
+                min="1"
+                max="{{this.product.stock}}"
+                value="{{this.quantity}}"
+                data-product-id="{{this.product._id}}"
+              />
+            </td>
+            <td class="cart-subtotal">{{formatPrice this.subtotal}}</td>
+            <td>
+              <button class="btn btn-danger cart-remove-btn" data-product-id="{{this.product._id}}">
+                Eliminar
+              </button>
+            </td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+
+    <div class="cart-summary">
+      <p>Total: <strong id="cart-total">{{formatPrice total}}</strong></p>
+      <button id="cart-clear-btn" class="btn btn-secondary">Vaciar carrito</button>
+    </div>
+  {{else}}
+    <p>Tu carrito está vacío. <a href="/products">Ir al catálogo</a></p>
+  {{/if}}
+</div>
+
+<script src="/js/cart-page.js"></script>

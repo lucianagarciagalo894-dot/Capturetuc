@@ -1,0 +1,53 @@
+<a href="/products" class="back-link">&laquo; Volver al catálogo</a>
+
+<div class="product-detail">
+  <div class="product-detail-images">
+    {{#if product.thumbnails.[0]}}
+      <img src="{{product.thumbnails.[0]}}" alt="{{product.title}}" />
+    {{else}}
+      <div class="thumb-placeholder large">Sin imagen</div>
+    {{/if}}
+  </div>
+
+  <div class="product-detail-info">
+    <h1>{{product.title}}</h1>
+    <p class="product-category">{{product.category}}</p>
+    <p class="product-description">{{product.description}}</p>
+    <p class="product-price large">{{formatPrice product.price}}</p>
+    <p class="product-stock">Stock disponible: {{product.stock}}</p>
+
+    <h2>Características</h2>
+    <ul class="features-list">
+      <li><strong>Tamaño:</strong> {{product.features.size}}</li>
+      <li><strong>Tapa:</strong> {{product.features.cover}}</li>
+      <li><strong>Hojas:</strong> {{product.features.pages}}</li>
+    </ul>
+
+    {{#if product.status}}
+      <div
+        class="add-to-cart"
+        id="add-to-cart-box"
+        data-price="{{product.price}}"
+        data-extra-page-cost="{{product.features.extraPageCost}}"
+      >
+        <label for="quantity">Cantidad</label>
+        <input type="number" id="quantity" value="1" min="1" max="{{product.stock}}" />
+
+        {{#if product.features.extraPageCost}}
+          <label for="extra-pages">
+            Hojas extra <span class="hint">({{formatPrice product.features.extraPageCost}} c/u)</span>
+          </label>
+          <input type="number" id="extra-pages" value="0" min="0" />
+        {{/if}}
+
+        <button id="add-to-cart-btn" class="btn btn-primary" data-product-id="{{product._id}}">
+          Agregar al carrito
+        </button>
+      </div>
+      <p class="estimated-total">Total: <strong id="estimated-total">{{formatPrice product.price}}</strong></p>
+      <p id="add-to-cart-message" class="feedback-message"></p>
+    {{else}}
+      <p class="product-status inactive">Este álbum no está disponible actualmente.</p>
+    {{/if}}
+  </div>
+</div>

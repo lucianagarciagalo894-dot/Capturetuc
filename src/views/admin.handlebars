@@ -1,0 +1,99 @@
+<div class="admin-panel">
+  <h1>Panel de desarrollador</h1>
+  <p class="admin-subtitle">Gestión de álbumes de CAPTURE TUC &mdash; ruta protegida de demostración: <code>/{{adminPath}}</code></p>
+
+  <section class="admin-create">
+    <h2>Crear álbum</h2>
+    <form id="create-product-form" class="admin-form">
+      <div class="form-grid">
+        <label>Título<input type="text" name="title" required /></label>
+        <label>Categoría
+          <select name="category" required>
+            <option value="" disabled selected>Seleccioná una categoría</option>
+            <option value="Fotolibros Apaisados">Fotolibros Apaisados</option>
+            <option value="Fotolibros Cuadrados">Fotolibros Cuadrados</option>
+            <option value="Fotolibros Verticales">Fotolibros Verticales</option>
+          </select>
+        </label>
+        <label>Precio <span class="hint"></span><input type="number" name="price" min="0" step="1" required /></label>
+        <label>Stock<input type="number" name="stock" min="0" step="1" required /></label>
+        <label>Imagen (URL, opcional)<input type="text" name="thumbnail" /></label>
+      </div>
+      <label>Descripción<textarea name="description" required></textarea></label>
+
+      <h3>Características</h3>
+      <div class="form-grid">
+        <label>Tamaño<input type="text" name="size" placeholder="30x30 cm" required /></label>
+        <label>Tapa<input type="text" name="cover" placeholder="Tapa dura" required /></label>
+        <label>Cantidad de hojas<input type="number" name="pages" min="1" required /></label>
+        <label>Costo por 16 fotos extras<span class="hint"></span><input type="number" name="extraPageCost" min="0" step="1" placeholder="0" /></label>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Crear álbum</button>
+    </form>
+    <p id="create-feedback" class="feedback-message"></p>
+  </section>
+
+  <section class="admin-list">
+    <h2>Álbumes cargados</h2>
+    <div id="admin-products-list">
+      {{#each products}}
+        <article class="admin-product-card" data-id="{{this._id}}">
+          <div class="admin-product-summary">
+            <div>
+              <h3>{{this.title}}</h3>
+              <p>Categoría: {{this.category}}</p>
+              <p>Precio: {{formatPrice this.price}} &middot; Stock: {{this.stock}}</p>
+              <p>Tamaño: {{this.features.size}} &middot; Tapa: {{this.features.cover}} &middot; Hojas: {{this.features.pages}}</p>
+              {{#if this.features.extraPageCost}}
+                <p>Hoja extra: {{formatPrice this.features.extraPageCost}} c/u</p>
+              {{/if}}
+              <p class="product-status {{#unless this.status}}inactive{{/unless}}">
+                Estado: {{#if this.status}}Activo{{else}}Inactivo{{/if}}
+              </p>
+            </div>
+            <div class="admin-product-actions">
+              <button class="btn btn-secondary toggle-status-btn" data-status="{{this.status}}">
+                {{#if this.status}}Desactivar{{else}}Activar{{/if}}
+              </button>
+              <button class="btn btn-danger delete-product-btn">Eliminar</button>
+            </div>
+          </div>
+
+          <details>
+            <summary>Editar álbum</summary>
+            <form class="edit-product-form admin-form">
+              <div class="form-grid">
+                <label>Título<input type="text" name="title" value="{{this.title}}" required /></label>
+                <label>Categoría
+                  <select name="category" required>
+                    <option value="Fotolibros Apaisados" {{#if (eq this.category "Fotolibros Apaisados")}}selected{{/if}}>Fotolibros Apaisados</option>
+                    <option value="Fotolibros Cuadrados" {{#if (eq this.category "Fotolibros Cuadrados")}}selected{{/if}}>Fotolibros Cuadrados</option>
+                    <option value="Fotolibros Verticales" {{#if (eq this.category "Fotolibros Verticales")}}selected{{/if}}>Fotolibros Verticales</option>
+                  </select>
+                </label>
+                <label>Precio <span class="hint">(según la tapa elegida)</span><input type="number" name="price" min="0" value="{{this.price}}" required /></label>
+                <label>Stock<input type="number" name="stock" min="0" value="{{this.stock}}" required /></label>
+                <label>Imagen (URL)<input type="text" name="thumbnail" value="{{this.thumbnails.[0]}}" /></label>
+              </div>
+              <label>Descripción<textarea name="description" required>{{this.description}}</textarea></label>
+
+              <div class="form-grid">
+                <label>Tamaño<input type="text" name="size" value="{{this.features.size}}" required /></label>
+                <label>Tapa<input type="text" name="cover" value="{{this.features.cover}}" required /></label>
+                <label>Cantidad de hojas<input type="number" name="pages" min="1" value="{{this.features.pages}}" required /></label>
+                <label>Costo por hoja extra <span class="hint">(opcional)</span><input type="number" name="extraPageCost" min="0" step="1" value="{{this.features.extraPageCost}}" /></label>
+              </div>
+
+              <button type="submit" class="btn btn-primary">Guardar cambios</button>
+            </form>
+          </details>
+        </article>
+      {{else}}
+        <p>Todavía no hay álbumes cargados.</p>
+      {{/each}}
+    </div>
+  </section>
+</div>
+
+<script src="/js/admin.js"></script>

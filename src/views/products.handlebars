@@ -1,0 +1,63 @@
+<h1>Catálogo de álbumes</h1>
+
+<form class="filters-bar" method="GET" action="/products">
+  <label>
+    Categoría / disponibilidad
+    <select name="query">
+      <option value="" {{#if (eq filters.query "")}}selected{{/if}}>Todas</option>
+      <option value="category:Fotolibros Apaisados" {{#if (eq filters.query "category:Fotolibros Apaisados")}}selected{{/if}}>Fotolibros Apaisados</option>
+      <option value="category:Fotolibros Cuadrados" {{#if (eq filters.query "category:Fotolibros Cuadrados")}}selected{{/if}}>Fotolibros Cuadrados</option>
+      <option value="category:Fotolibros Verticales" {{#if (eq filters.query "category:Fotolibros Verticales")}}selected{{/if}}>Fotolibros Verticales</option>
+      <option value="status:true" {{#if (eq filters.query "status:true")}}selected{{/if}}>Solo disponibles</option>
+    </select>
+  </label>
+
+  <label>
+    Ordenar por precio
+    <select name="sort">
+      <option value="" {{#if (eq filters.sort "")}}selected{{/if}}>Sin orden</option>
+      <option value="asc" {{#if (eq filters.sort "asc")}}selected{{/if}}>Menor a mayor</option>
+      <option value="desc" {{#if (eq filters.sort "desc")}}selected{{/if}}>Mayor a menor</option>
+    </select>
+  </label>
+
+
+  <button type="submit" class="btn btn-primary">Aplicar</button>
+</form>
+
+<div id="products-grid" class="products-grid" data-limit="{{filters.limit}}" data-query="{{filters.query}}" data-sort="{{filters.sort}}">
+  {{#each products}}
+    <div class="product-card" data-id="{{this._id}}">
+      <div class="product-thumb">
+        {{#if this.thumbnails.[0]}}
+          <img src="{{this.thumbnails.[0]}}" alt="{{this.title}}" />
+        {{else}}
+          <div class="thumb-placeholder">Sin imagen</div>
+        {{/if}}
+      </div>
+      <h3>{{this.title}}</h3>
+      <p class="product-category">{{this.category}}</p>
+      <p class="product-price">{{formatPrice this.price}}</p>
+      <p class="product-stock">Stock: {{this.stock}}</p>
+      <p class="product-feature">Tamaño: {{this.features.size}}</p>
+      <p class="product-status {{#unless this.status}}inactive{{/unless}}">
+        {{#if this.status}}Disponible{{else}}No disponible{{/if}}
+      </p>
+      <a href="/products/{{this._id}}" class="btn btn-secondary">Ver detalle</a>
+    </div>
+  {{else}}
+    <p id="empty-message">No se encontraron álbumes con esos filtros.</p>
+  {{/each}}
+</div>
+
+<div class="pagination">
+  {{#if pagination.hasPrevPage}}
+    <a href="{{pagination.prevLink}}" class="btn btn-secondary">&laquo; Anterior</a>
+  {{/if}}
+  <span>Página {{pagination.page}} de {{pagination.totalPages}}</span>
+  {{#if pagination.hasNextPage}}
+    <a href="{{pagination.nextLink}}" class="btn btn-secondary">Siguiente &raquo;</a>
+  {{/if}}
+</div>
+
+<script src="/js/catalog.js"></script>

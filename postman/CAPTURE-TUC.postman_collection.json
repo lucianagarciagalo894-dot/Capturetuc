@@ -1,0 +1,187 @@
+{
+  "info": {
+    "name": "CAPTURE TUC",
+    "description": "Colección de pruebas para la API de CAPTURE TUC (Proyecto final Backend - CoderHouse). Usa las variables {{baseUrl}}, {{productId}} y {{cartId}}.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "productId", "value": "" },
+    { "key": "cartId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Productos",
+      "item": [
+        {
+          "name": "Listar productos (paginado)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/products?limit=10&page=1&sort=asc&query=category:Fotolibros Cuadrados",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products"],
+              "query": [
+                { "key": "limit", "value": "10" },
+                { "key": "page", "value": "1" },
+                { "key": "sort", "value": "asc" },
+                { "key": "query", "value": "category:Fotolibros Cuadrados" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Obtener producto por ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/products/{{productId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products", "{{productId}}"]
+            }
+          }
+        },
+        {
+          "name": "Crear producto",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Álbum Premium\",\n  \"description\": \"Álbum premium con tapa dura.\",\n  \"price\": 25000,\n  \"stock\": 10,\n  \"category\": \"Fotolibros Cuadrados\",\n  \"thumbnails\": [],\n  \"features\": {\n    \"size\": \"30x30 cm\",\n    \"cover\": \"Tapa dura\",\n    \"pages\": 40,\n    \"extraPageCost\": 800\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Actualizar producto",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/{{productId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products", "{{productId}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": 27500,\n  \"stock\": 10\n}"
+            }
+          }
+        },
+        {
+          "name": "Eliminar producto",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/products/{{productId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products", "{{productId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Carritos",
+      "item": [
+        {
+          "name": "Crear carrito",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/carts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "carts"]
+            }
+          }
+        },
+        {
+          "name": "Obtener carrito (populate)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/carts/{{cartId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "carts", "{{cartId}}"]
+            }
+          }
+        },
+        {
+          "name": "Agregar producto al carrito",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/carts/{{cartId}}/products/{{productId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "carts", "{{cartId}}", "products", "{{productId}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 2,\n  \"extraPages\": 3\n}"
+            }
+          }
+        },
+        {
+          "name": "Eliminar producto del carrito",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/carts/{{cartId}}/products/{{productId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "carts", "{{cartId}}", "products", "{{productId}}"]
+            }
+          }
+        },
+        {
+          "name": "Reemplazar productos del carrito",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/carts/{{cartId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "carts", "{{cartId}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"products\": [\n    { \"product\": \"{{productId}}\", \"quantity\": 3, \"extraPages\": 0 }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Modificar cantidad de un producto",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/carts/{{cartId}}/products/{{productId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "carts", "{{cartId}}", "products", "{{productId}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 5\n}"
+            }
+          }
+        },
+        {
+          "name": "Vaciar carrito",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/carts/{{cartId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "carts", "{{cartId}}"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{title}}</title>
+  <link rel="icon" href="/images/logo.jpg" />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="brand">
+        <img src="/images/logo.jpg" alt="CAPTURE TUC" class="brand-logo" />
+        CAPTURE TUC
+      </a>
+      <nav class="main-nav">
+        <a href="/">Inicio</a>
+        <a href="/products">Catálogo</a>
+        <a href="/informacion">Información</a>
+        <a href="/contacto">Contacto</a>
+        <a href="#" id="nav-cart-link">Mi carrito</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    {{{body}}}
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>CAPTURE TUC &mdash; Proyecto final Backend, CoderHouse.</p>
+    </div>
+  </footer>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/cart.js"></script>
+</body>
+</html>
