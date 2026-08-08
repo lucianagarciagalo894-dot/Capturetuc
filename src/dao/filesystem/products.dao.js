@@ -47,6 +47,11 @@ class ProductsDAOFileSystem {
 
   async create(data) {
     const all = await readCollection(FILE_NAME);
+    if (all.some((p) => p.code === data.code)) {
+      const error = new Error('duplicate code');
+      error.code = 11000;
+      throw error;
+    }
     const newProduct = {
       _id: new mongoose.Types.ObjectId().toString(),
       status: true,
@@ -64,6 +69,12 @@ class ProductsDAOFileSystem {
     const all = await readCollection(FILE_NAME);
     const index = all.findIndex((p) => p._id === id);
     if (index === -1) return null;
+
+    if (data.code && all.some((p) => p.code === data.code && p._id !== id)) {
+      const error = new Error('duplicate code');
+      error.code = 11000;
+      throw error;
+    }
 
     const { _id, ...safeData } = data;
     all[index] = { ...all[index], ...safeData, updatedAt: new Date().toISOString() };

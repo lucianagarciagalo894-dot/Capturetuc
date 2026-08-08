@@ -1,7 +1,7 @@
 const { ProductsDAO } = require('../dao/factory');
 const ApiError = require('../utils/ApiError');
 
-const REQUIRED_FIELDS = ['title', 'description', 'price', 'stock', 'category'];
+const REQUIRED_FIELDS = ['title', 'description', 'code', 'price', 'stock', 'category'];
 const REQUIRED_FEATURES = ['size', 'cover', 'pages'];
 
 // Acepta "category:premium" o "status:true" (también "availability" como alias de status).
@@ -116,16 +116,30 @@ class ProductsService {
 
   async createProduct(data) {
     validateProductPayload(data);
-    return ProductsDAO.create(data);
+    try {
+      return await ProductsDAO.create(data);
+    } catch (error) {
+      if (error.code === 11000) {
+        throw new ApiError(400, `Ya existe un álbum con el código "${data.code}"`);
+      }
+      throw error;
+    }
   }
 
   async updateProduct(id, data) {
     validateProductPayload(data, { partial: true });
-    const updated = await ProductsDAO.update(id, data);
-    if (!updated) {
-      throw new ApiError(404, `No se encontró el álbum con id ${id}`);
+    try {
+      const updated = await ProductsDAO.update(id, data);
+      if (!updated) {
+        throw new ApiError(404, `No se encontró el álbum con id ${id}`);
+      }
+      return updated;
+    } catch (error) {
+      if (error.code === 11000) {
+        throw new ApiError(400, `Ya existe un álbum con el código "${data.code}"`);
+      }
+      throw error;
     }
-    return updated;
   }
 
   async deleteProduct(id) {

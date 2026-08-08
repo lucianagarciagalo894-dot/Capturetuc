@@ -7,6 +7,7 @@
     <form id="create-product-form" class="admin-form">
       <div class="form-grid">
         <label>Título<input type="text" name="title" required /></label>
+        <label>Código<input type="text" name="code" placeholder="FA-21X15-B" required /></label>
         <label>Categoría
           <select name="category" required>
             <option value="" disabled selected>Seleccioná una categoría</option>
@@ -42,7 +43,7 @@
           <div class="admin-product-summary">
             <div>
               <h3>{{this.title}}</h3>
-              <p>Categoría: {{this.category}}</p>
+              <p>Código: {{this.code}} &middot; Categoría: {{this.category}}</p>
               <p>Precio: {{formatPrice this.price}} &middot; Stock: {{this.stock}}</p>
               <p>Tamaño: {{this.features.size}} &middot; Tapa: {{this.features.cover}} &middot; Hojas: {{this.features.pages}}</p>
               {{#if this.features.extraPageCost}}
@@ -65,6 +66,7 @@
             <form class="edit-product-form admin-form">
               <div class="form-grid">
                 <label>Título<input type="text" name="title" value="{{this.title}}" required /></label>
+                <label>Código<input type="text" name="code" value="{{this.code}}" required /></label>
                 <label>Categoría
                   <select name="category" required>
                     <option value="Fotolibros Apaisados" {{#if (eq this.category "Fotolibros Apaisados")}}selected{{/if}}>Fotolibros Apaisados</option>

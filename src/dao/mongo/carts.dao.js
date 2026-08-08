@@ -2,7 +2,7 @@ const Cart = require('../../models/Cart');
 
 // select limita el populate a los campos que la vista/API realmente necesita,
 // evitando arrastrar campos internos como timestamps del producto.
-const PRODUCT_POPULATE_FIELDS = 'title description price stock category thumbnails features status';
+const PRODUCT_POPULATE_FIELDS = 'title description code price stock category thumbnails features status';
 
 class CartsDAOMongo {
   async create() {

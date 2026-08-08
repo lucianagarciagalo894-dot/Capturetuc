@@ -53,7 +53,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"title\": \"Álbum Premium\",\n  \"description\": \"Álbum premium con tapa dura.\",\n  \"price\": 25000,\n  \"stock\": 10,\n  \"category\": \"Fotolibros Cuadrados\",\n  \"thumbnails\": [],\n  \"features\": {\n    \"size\": \"30x30 cm\",\n    \"cover\": \"Tapa dura\",\n    \"pages\": 40,\n    \"extraPageCost\": 800\n  }\n}"
+              "raw": "{\n  \"title\": \"Álbum Premium\",\n  \"description\": \"Álbum premium con tapa dura.\",\n  \"code\": \"FC-30X30-D\",\n  \"price\": 25000,\n  \"stock\": 10,\n  \"category\": \"Fotolibros Cuadrados\",\n  \"thumbnails\": [],\n  \"features\": {\n    \"size\": \"30x30 cm\",\n    \"cover\": \"Tapa dura\",\n    \"pages\": 40,\n    \"extraPageCost\": 800\n  }\n}"
             }
           }
         },

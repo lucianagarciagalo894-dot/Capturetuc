@@ -5,12 +5,19 @@
 // de detalle de producto.
 
 async function getOrCreateCartId() {
-  let cartId = localStorage.getItem('capture_tuc_cart_id');
-  if (cartId) return cartId;
+  const cachedId = localStorage.getItem('capture_tuc_cart_id');
+  if (cachedId) {
+    // El carrito guardado en este navegador puede haber sido borrado del
+    // lado del servidor (ej. limpieza de datos de prueba). Si ya no existe,
+    // descartamos el ID viejo en vez de romper la página.
+    const check = await fetch(`/api/carts/${cachedId}`);
+    if (check.ok) return cachedId;
+    localStorage.removeItem('capture_tuc_cart_id');
+  }
 
   const response = await fetch('/api/carts', { method: 'POST' });
   const data = await response.json();
-  cartId = data.payload._id;
+  const cartId = data.payload._id;
   localStorage.setItem('capture_tuc_cart_id', cartId);
   return cartId;
 }
@@ -73,10 +80,7 @@ function initAddToCartButton() {
         throw new Error(data.message || 'No se pudo agregar el álbum al carrito');
       }
 
-      if (feedback) {
-        feedback.textContent = 'Álbum agregado al carrito.';
-        feedback.classList.remove('error');
-      }
+      window.location.href = `/carts/${cartId}`;
     } catch (error) {
       if (feedback) {
         feedback.textContent = error.message;

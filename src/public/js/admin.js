@@ -6,6 +6,7 @@ function buildProductPayload(form) {
   return {
     title: data.get('title'),
     description: data.get('description'),
+    code: data.get('code'),
     category: data.get('category'),
     price: Number(data.get('price')),
     stock: Number(data.get('stock')),

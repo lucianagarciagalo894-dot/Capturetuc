@@ -4,7 +4,7 @@ E-commerce especializado en la venta de álbumes de fotos personalizados. Proyec
 
 Permite a un cliente ver el catálogo de álbumes, consultar el detalle de cada uno (tamaño, tapa, hojas, opción de agregar hojas extra pagando un costo adicional), agregarlos a un carrito, modificar cantidades y vaciar el carrito. Un administrador cuenta con un panel de gestión (`/admin`, sin link visible en el sitio público) para crear, editar, eliminar, activar/desactivar álbumes y modificar precio, stock y características, con actualización en tiempo real hacia los clientes conectados vía WebSockets.
 
-> Nota sobre el modelo: la consigna original de la cátedra pedía `features: size, cover, pages, finish, orientation, material` y un campo `code` único. Por pedido explícito de la dueña del emprendimiento, el modelo se simplificó a `size`, `cover`, `pages` (+ `extraPageCost`, ver más abajo) y se quitó `code`, `finish`, `orientation` y `material` — decisión tomada a sabiendas de que se aleja del modelo literal de la consigna, priorizando que la app sea útil para el negocio real. Si tu cátedra evalúa el modelo exacto, tenelo presente para la defensa.
+> Nota sobre el modelo: la primera versión de la consigna pedía además `features: finish, orientation, material`. Esos tres campos se sacaron a pedido explícito de la dueña del emprendimiento (no los usa el negocio real), pero `code` volvió a incorporarse porque la versión final de la consigna lo vuelve a pedir de forma explícita como campo obligatorio del producto.
 
 ---
 
@@ -117,11 +117,11 @@ Esta estructura sigue el diseño pedido por la consigna sin modificaciones; se a
 
 ## 8. Modelos y por qué usamos referencias + populate
 
-**Product** (colección `products`): `title`, `description`, `price`, `status`, `stock`, `category`, `thumbnails[]` y un subdocumento `features` (`size`, `cover`, `pages`, `extraPageCost`). `extraPageCost` es el costo de cada hoja adicional a las que trae el álbum de base; si es `0` (o no se carga), el cliente no ve la opción de agregar hojas extra en el detalle del producto. Se modeló `features` como subdocumento (no colección aparte) porque es información que **siempre** pertenece a un único álbum, nunca se reutiliza entre productos ni se consulta de forma independiente — no tiene sentido relacional, por eso no lleva `populate`.
+**Product** (colección `products`): `title`, `description`, `code` (único), `price`, `status`, `stock`, `category`, `thumbnails[]` y un subdocumento `features` (`size`, `cover`, `pages`, `extraPageCost`). `extraPageCost` es el costo de cada hoja adicional a las que trae el álbum de base; si es `0` (o no se carga), el cliente no ve la opción de agregar hojas extra en el detalle del producto. Se modeló `features` como subdocumento (no colección aparte) porque es información que **siempre** pertenece a un único álbum, nunca se reutiliza entre productos ni se consulta de forma independiente — no tiene sentido relacional, por eso no lleva `populate`.
 
 **Cart** (colección `carts`): `products: [{ product: ObjectId (ref Product), quantity: Number, extraPages: Number }]`. `extraPages` guarda cuántas hojas extra eligió el cliente para esa línea del carrito; el precio de esa línea se calcula como `(product.price + extraPages * product.features.extraPageCost) * quantity`.
 
-Usamos **referencia + populate** (en vez de embeber el producto completo dentro del carrito) porque el catálogo cambia todo el tiempo (precio, stock, estado) y un carrito puede vivir mucho tiempo: si copiáramos los datos del producto dentro del carrito, quedarían desactualizados apenas el admin cambia un precio. Con referencia, `GET /api/carts/:cid` siempre trae la info más actual del producto vía `populate('products.product')`. Usamos `select` en el populate para traer solo los campos que la vista/API necesitan (`title description price stock category thumbnails features status`), evitando arrastrar campos internos.
+Usamos **referencia + populate** (en vez de embeber el producto completo dentro del carrito) porque el catálogo cambia todo el tiempo (precio, stock, estado) y un carrito puede vivir mucho tiempo: si copiáramos los datos del producto dentro del carrito, quedarían desactualizados apenas el admin cambia un precio. Con referencia, `GET /api/carts/:cid` siempre trae la info más actual del producto vía `populate('products.product')`. Usamos `select` en el populate para traer solo los campos que la vista/API necesitan (`title description code price stock category thumbnails features status`), evitando arrastrar campos internos.
 
 Un producto solo puede aparecer **una vez** por carrito: si se vuelve a agregar el mismo álbum con una cantidad de hojas extra distinta, se actualiza `extraPages` de esa línea y se suma la cantidad, en vez de crear una segunda línea para el mismo producto. Esto mantiene simple el contrato de `DELETE/PUT /api/carts/:cid/products/:pid` (identifican una línea únicamente por `:pid`, tal como pide la consigna).
 
@@ -207,6 +207,7 @@ Middleware central (`src/middlewares/errorHandler.js`): las `services` lanzan `A
 
 En `Product` (`src/models/Product.js`):
 
+- `code`: único (`unique: true`), genera su propio índice — evita SKUs duplicados y permite búsquedas puntuales por código.
 - `{ category: 1, status: 1 }` (compuesto): la consulta más frecuente del catálogo público filtra por categoría **y** disponibilidad al mismo tiempo (`query=category:x` combinado con "solo disponibles"). Se puso `category` primero porque tiene mayor cardinalidad (más valores distintos) que `status` (que es binario), lo cual hace que el índice compuesto sea más selectivo en ese orden.
 - `{ price: 1 }`: usado por el `sort=asc|desc` del catálogo.
 
@@ -358,7 +359,7 @@ Colección en `postman/CAPTURE-TUC.postman_collection.json`, con variables `{{ba
     Todo pasa por `.env` (ignorado por git) y `src/config/env.js`. `.env.example` solo tiene las claves, sin valores sensibles.
 
 18. **¿Qué validaciones tiene el modelo `Product` a nivel de Mongoose, además de las del service?**
-    Campos requeridos (`required: true`), tipos, `min: 0` en precio/stock/`extraPageCost`. Son una segunda barrera además de las validaciones manuales en `services/products.service.js` (defensa en profundidad).
+    Campos requeridos (`required: true`), tipos, `min: 0` en precio/stock/`extraPageCost`, `unique: true` en `code`. Son una segunda barrera además de las validaciones manuales en `services/products.service.js` (defensa en profundidad).
 
 19. **¿Por qué usan `async/await` en vez de `.then()` encadenado?**
     Porque el código queda más lineal y fácil de leer, y el manejo de errores se centraliza en un solo `try/catch` por función en vez de un `.catch()` por cada promesa.
@@ -372,5 +373,5 @@ Colección en `postman/CAPTURE-TUC.postman_collection.json`, con variables `{{ba
 22. **¿Por qué un producto no puede tener dos líneas distintas en el mismo carrito (por ejemplo, con 0 y con 3 hojas extra)?**
     Para no romper el contrato de la consigna, donde `DELETE`/`PUT /api/carts/:cid/products/:pid` identifican una línea del carrito únicamente por `:pid`. Si un mismo producto pudiera aparecer varias veces, esos endpoints dejarían de ser unívocos. Por eso, al re-agregar el mismo álbum con otra cantidad de hojas extra, se actualiza la línea existente en vez de crear una nueva.
 
-23. **¿Por qué el modelo de `Product` no tiene `code`, `finish`, `orientation` ni `material` si la consigna original los pedía?**
-    Fue un pedido explícito de la dueña del emprendimiento real para simplificar el formulario de carga a lo que efectivamente usa el negocio. Es una decisión consciente que prioriza la utilidad real de la app por sobre el modelo literal de la consigna — vale la pena mencionarlo en la defensa si el profesor pregunta por esos campos específicos.
+23. **¿Por qué el modelo de `Product` no tiene `finish`, `orientation` ni `material` si la primera versión de la consigna los pedía?**
+    Fue un pedido explícito de la dueña del emprendimiento real para simplificar el formulario de carga a lo que efectivamente usa el negocio (no vende variantes de "acabado" o "material"). `code` sí volvió a incorporarse porque la versión final de la consigna lo exige como campo obligatorio, único, generado por el negocio como SKU (ej. `FA-21X15-B`).
