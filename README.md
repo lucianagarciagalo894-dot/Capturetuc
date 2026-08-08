@@ -168,6 +168,8 @@ Respuesta de `GET /api/products` (formato exacto pedido por la consigna):
 
 Todas las operaciones validan: que el carrito exista, que el producto exista, que la cantidad sea un número positivo y que haya stock suficiente.
 
+**Nota:** la consigna de la cátedra no pide un flujo de pago/checkout (solo gestión de carrito), así que esto **no** forma parte de la API ni de la evaluación técnica. Se agregó igual, a pedido del negocio real, como una capa puramente visual en `/carts/:cid`: el botón "Finalizar compra" despliega un selector de medio de pago (Transferencia / Efectivo). Si se elige Transferencia, se muestran Alias, CVU, Nombre y el Monto total del carrito (dato real, tomado del mismo `total` que ya calcula el servidor). No crea ninguna orden ni toca la base de datos — es informativo, pensado para que el cliente sepa cómo pagar y mande el comprobante por WhatsApp.
+
 ## 11. Paginación, filtros y ordenamiento
 
 Implementado con `mongoose-paginate-v2` sobre `Product` (modo Mongo) y de forma equivalente a mano (slice + sort) en modo FileSystem, exponiendo la misma forma de respuesta en ambos casos.

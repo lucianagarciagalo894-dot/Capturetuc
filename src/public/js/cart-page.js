@@ -1,3 +1,8 @@
+// Cargado solo en /carts/:cid.
+// Maneja los cambios de cantidad, la eliminación de productos, el vaciado
+// del carrito y el panel de "Finalizar compra" (medio de pago). Tras cada
+// operación exitosa se recarga la vista para reflejar el nuevo subtotal/total
+// (el recálculo se hace en el servidor).
 
 document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('cart-container');
@@ -40,5 +45,23 @@ document.addEventListener('DOMContentLoaded', () => {
       const response = await fetch(`/api/carts/${cartId}`, { method: 'DELETE' });
       if (response.ok) window.location.reload();
     }
+  });
+
+  const checkoutBtn = document.getElementById('checkout-btn');
+  const checkoutPanel = document.getElementById('checkout-panel');
+  if (checkoutBtn && checkoutPanel) {
+    checkoutBtn.addEventListener('click', () => {
+      checkoutPanel.classList.remove('hidden');
+      checkoutPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+
+  const transferDetails = document.getElementById('transfer-details');
+  const cashDetails = document.getElementById('cash-details');
+  document.querySelectorAll('input[name="payment-method"]').forEach((input) => {
+    input.addEventListener('change', () => {
+      transferDetails.classList.toggle('hidden', input.value !== 'transferencia');
+      cashDetails.classList.toggle('hidden', input.value !== 'efectivo');
+    });
   });
 });

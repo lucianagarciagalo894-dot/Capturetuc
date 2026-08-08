@@ -54,6 +54,35 @@
       <p>Total: <strong id="cart-total">{{formatPrice total}}</strong></p>
       <a href="/products" class="btn btn-secondary">Seguir comprando</a>
       <button id="cart-clear-btn" class="btn btn-secondary">Vaciar carrito</button>
+      <button id="checkout-btn" class="btn btn-primary">Finalizar compra</button>
+    </div>
+
+    <div id="checkout-panel" class="checkout-panel hidden">
+      <h2>¿Cómo querés pagar?</h2>
+      <div class="payment-options">
+        <label class="payment-option">
+          <input type="radio" name="payment-method" value="transferencia" />
+          Transferencia
+        </label>
+        <label class="payment-option">
+          <input type="radio" name="payment-method" value="efectivo" />
+          Efectivo
+        </label>
+      </div>
+
+      <div id="transfer-details" class="payment-details hidden">
+        <ul class="payment-details-list">
+          <li><strong>Alias:</strong> Capture.tuc</li>
+          <li><strong>CVU:</strong> 123456789</li>
+          <li><strong>Nombre:</strong> Luciana Garcia Galo</li>
+          <li><strong>Monto:</strong> {{formatPrice total}}</li>
+        </ul>
+        <p class="hint">Una vez hecha la transferencia, mandanos el comprobante por <a href="https://wa.me/5493815736920" target="_blank" rel="noopener">WhatsApp</a> para confirmar tu pedido.</p>
+      </div>
+
+      <div id="cash-details" class="payment-details hidden">
+        <p>Coordinamos el pago en efectivo al retirar o entregar tu pedido. Escribinos por <a href="https://wa.me/5493815736920" target="_blank" rel="noopener">WhatsApp</a> para coordinar.</p>
+      </div>
     </div>
   {{else}}
     <p>Tu carrito está vacío. <a href="/products">Ir al catálogo</a></p>
