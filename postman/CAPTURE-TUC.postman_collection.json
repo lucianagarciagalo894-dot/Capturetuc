@@ -15,6 +15,22 @@
       "item": [
         {
           "name": "Listar productos (paginado)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "const body = pm.response.json();",
+                  "pm.test('Devuelve payload paginado', () => pm.expect(body.payload).to.be.an('array'));",
+                  "if (body.payload && body.payload.length && !pm.collectionVariables.get('productId')) {",
+                  "  pm.collectionVariables.set('productId', body.payload[0]._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "url": {
@@ -32,6 +48,18 @@
         },
         {
           "name": "Obtener producto por ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Devuelve el producto solicitado', () => pm.expect(pm.response.json().payload._id).to.eql(pm.collectionVariables.get('productId')));"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "url": {
@@ -43,6 +71,20 @@
         },
         {
           "name": "Crear producto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "const body = pm.response.json();",
+                  "pm.test('Devuelve el producto creado', () => pm.expect(body.payload._id).to.be.a('string'));",
+                  "pm.collectionVariables.set('productId', body.payload._id);"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -59,6 +101,18 @@
         },
         {
           "name": "Actualizar producto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Precio actualizado', () => pm.expect(pm.response.json().payload.price).to.eql(27500));"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "PUT",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -72,17 +126,6 @@
               "raw": "{\n  \"price\": 27500,\n  \"stock\": 10\n}"
             }
           }
-        },
-        {
-          "name": "Eliminar producto",
-          "request": {
-            "method": "DELETE",
-            "url": {
-              "raw": "{{baseUrl}}/api/products/{{productId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "products", "{{productId}}"]
-            }
-          }
         }
       ]
     },
@@ -91,6 +134,20 @@
       "item": [
         {
           "name": "Crear carrito",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "const body = pm.response.json();",
+                  "pm.test('Devuelve el carrito creado', () => pm.expect(body.payload._id).to.be.a('string'));",
+                  "pm.collectionVariables.set('cartId', body.payload._id);"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "url": {
@@ -102,6 +159,18 @@
         },
         {
           "name": "Obtener carrito (populate)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Devuelve el carrito solicitado', () => pm.expect(pm.response.json().payload._id).to.eql(pm.collectionVariables.get('cartId')));"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "url": {
@@ -113,6 +182,22 @@
         },
         {
           "name": "Agregar producto al carrito",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('El producto quedó en el carrito', () => {",
+                  "  const products = pm.response.json().payload.products;",
+                  "  const pid = pm.collectionVariables.get('productId');",
+                  "  pm.expect(products.some((i) => (i.product._id || i.product) === pid)).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -129,6 +214,22 @@
         },
         {
           "name": "Eliminar producto del carrito",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('El producto ya no está en el carrito', () => {",
+                  "  const products = pm.response.json().payload.products;",
+                  "  const pid = pm.collectionVariables.get('productId');",
+                  "  pm.expect(products.some((i) => (i.product._id || i.product) === pid)).to.be.false;",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "DELETE",
             "url": {
@@ -140,6 +241,23 @@
         },
         {
           "name": "Reemplazar productos del carrito",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('El carrito tiene cantidad 3', () => {",
+                  "  const products = pm.response.json().payload.products;",
+                  "  const pid = pm.collectionVariables.get('productId');",
+                  "  const item = products.find((i) => (i.product._id || i.product) === pid);",
+                  "  pm.expect(item.quantity).to.eql(3);",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "PUT",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -156,6 +274,23 @@
         },
         {
           "name": "Modificar cantidad de un producto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('El carrito tiene cantidad 5', () => {",
+                  "  const products = pm.response.json().payload.products;",
+                  "  const pid = pm.collectionVariables.get('productId');",
+                  "  const item = products.find((i) => (i.product._id || i.product) === pid);",
+                  "  pm.expect(item.quantity).to.eql(5);",
+                  "});"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "PUT",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
@@ -172,12 +307,51 @@
         },
         {
           "name": "Vaciar carrito",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('El carrito quedó vacío', () => pm.expect(pm.response.json().payload.products).to.have.lengthOf(0));"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "DELETE",
             "url": {
               "raw": "{{baseUrl}}/api/carts/{{cartId}}",
               "host": ["{{baseUrl}}"],
               "path": ["api", "carts", "{{cartId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Limpieza",
+      "item": [
+        {
+          "name": "Eliminar producto",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/products/{{productId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products", "{{productId}}"]
             }
           }
         }
